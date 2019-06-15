@@ -4,6 +4,7 @@
 // init project
 var express = require('express');
 var app = express();
+var moment = require('moment');
 
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC 
@@ -24,6 +25,33 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+app.get('/api/timestamp/:date_string', function (req, res) {
+  let dateString = req.params.date_string
+  if(!(isNaN(dateString))){
+    var time = moment.unix(dateString);
+    if (time.isValid){
+      var utcdate = moment.unix(dateString).format("MMM D, YYYY");
+      var jsonObject = {"unix": dateString, "natural": utcdate}
+      res.send(jsonObject);
+    }
+    else{
+      var jsonObject = {"unix":null, "natural": "Invalid Date"}
+      res.send(jsonObject);
+    }
+  }
+  else{
+    var time = moment(dateString);
+    if(time.isValid()){
+      var utcdate = (new Date(dateString).getTime())/1000;
+      var jsonObject = {"unix": utcdate, "natural": dateString}
+      res.send(jsonObject);
+    }
+    else{
+      var jsonObject = {"unix":null, "natural": "Invalid Date"}
+      res.send(jsonObject);
+    }
+  }
+});
 
 
 // listen for requests :)
